@@ -1,0 +1,8 @@
+
+
+message MessageOne {
+    optional int32 f_int32 = 1;
+    optional int64 f_int64 = 2;
+    optional uint32 f_uint32 = 3;
+    optional uint64 f_uint64 = 4;
+}

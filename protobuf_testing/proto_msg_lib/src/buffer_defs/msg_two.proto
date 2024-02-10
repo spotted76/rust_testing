@@ -1,0 +1,13 @@
+
+
+message SubMsg {
+    optional int32 value = 1;
+}
+
+message Two {
+    optional int32 two_int32 = 1;
+    optional int64 two_int64 = 2;
+    optional uint32 two_uint32 = 3;
+    optional uint64 two_uint64 = 4;
+    optional SubMsg two_sub = 5;
+}
