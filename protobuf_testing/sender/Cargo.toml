@@ -12,4 +12,8 @@ anyhow = "1.0.75"
 pretty_assertions = { version = "1.4.0", features = ["unstable"] }
 tokio = { version = "1.34.0", features = ["time", "macros", "rt-multi-thread"] }
 quick-protobuf = "0.8.1"
-proto_msg_lib = { path= "../proto_msg_lib" }
+protobuf = "3"
+
+[build-dependencies]
+protobuf-codegen = "3"
+protoc-rust = "^2.0"

@@ -30,7 +30,7 @@ async fn client(listens: &str) -> Result<(), anyhow::Error> {
         if let Some(FromServer::Message { body, .. }) = msg.as_ref().map(|m| &m.content) {
             let reconstructed = GetRequest::parse_from_bytes(&body.as_ref().unwrap()).unwrap();
             // let reconstructed : msg_one::MessageOne = reader::deserialize_from_slice(&body.as_ref().unwrap()).expect("Cannot convert into a `MessageOne`");
-            println!("Received:  {:?}", reconstructed);
+            println!("Received:  {:#?}", reconstructed);
         } else {
             anyhow::bail!("Unexpected: {:?}", msg)
         }

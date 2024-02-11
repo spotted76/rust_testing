@@ -3,20 +3,17 @@ use std::time::Duration;
 use futures::prelude::*;
 use tokio_stomp::*;
 
-use proto_msg_lib::msg_one::{self, MessageOne};
+use protobuf::{EnumOrUnknown, Message};
 
-use quick_protobuf::{MessageRead, BytesReader};
-use quick_protobuf::writer;
-use quick_protobuf::reader;
+include!(concat!(env!("OUT_DIR"), "/protos/mod.rs"));
 
-// This examples consists of two futures, each of which connects to a local server,
-// and then sends either PING or PONG messages to the server while listening
-// for replies. This continues indefinitely (ctrl-c to exit)
+use example::{get_response, GetRequest, GetResponse};
+
 
 // You can start a simple STOMP server with docker:
 // `docker run -p 61613:61613 rmohr/activemq:latest`
 
-async fn client(sends: &str, msg: &mut MessageOne) -> Result<(), anyhow::Error> {
+async fn client(sends: &str, msg: &mut GetRequest) -> Result<(), anyhow::Error> {
     let mut conn = client::connect(
         "172.17.0.3:61613",
         "/".to_string(),
@@ -29,12 +26,10 @@ async fn client(sends: &str, msg: &mut MessageOne) -> Result<(), anyhow::Error> 
 
     loop {
 
-        let mut msg = msg_one::MessageOne{..Default::default()};
-        msg.f_int32 = Some(iter_count);
+        msg.age = iter_count;
+        let vec: Vec<u8> = msg.write_to_bytes().unwrap();
 
-        let vec = writer::serialize_into_vec(&msg).expect("Cannot serialize `MessageOne`");
-
-        println!("Sending iter:  {}", msg.f_int32.unwrap());
+        println!("Sending iter:  {}", msg.age);
         conn.send(
             ToServer::Send {
                 destination: sends.into(),
@@ -55,7 +50,14 @@ async fn client(sends: &str, msg: &mut MessageOne) -> Result<(), anyhow::Error> 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
 
-    let mut msg_one = MessageOne{..Default::default()};
+
+    // Encode example request
+    let mut msg_one = GetRequest::new();
+    msg_one.name = "John Smith".to_string();
+    msg_one.age = 0;
+    msg_one.features.push("one".to_string());
+    msg_one.features.push("two".to_string());
+    
 
     let fut1 = Box::pin(client("Topic", &mut msg_one));
 
